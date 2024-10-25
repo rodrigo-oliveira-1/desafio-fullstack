@@ -1,14 +1,12 @@
-version: '3.8'
-
 services:
   mysql:
     image: mysql:8.0
     container_name: mysqldb
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: appdb
-      MYSQL_USER: appuser
-      MYSQL_PASSWORD: apppassword
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: users
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: 123456
     ports:
       - "3306:3306"
     volumes:
@@ -16,22 +14,17 @@ services:
     networks:
       - app-network
 
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: app
-    environment:
-      DB_HOST: mysqldb
-      DB_USER: appuser
-      DB_PASSWORD: apppassword
-      DB_NAME: appdb
-    depends_on:
-      - mysql
-    networks:
-      - app-network
-    ports:
-      - "3000:3000"
+  # app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: app
+  #   depends_on:
+  #     - mysql
+  #   networks:
+  #     - app-network
+  #   ports:
+  #     - "3000:3000"
 
 networks:
   app-network:
