@@ -72,8 +72,7 @@ export class UpdateUser {
       createdAt: user.createdAt,
       updatedAt: currentDate,
       updatedBy: data.updatedBy ? data.updatedBy : null
-    })  
-    
+    }, data.id)  
 
     await this.usersRepository.save(userUpdated)
     

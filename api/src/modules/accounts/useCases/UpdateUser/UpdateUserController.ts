@@ -28,7 +28,7 @@ export class UpdateUserController implements Controller {
 
       if (result.isLeft()) {
         const error = result.value
-
+        console.log(error)
         switch (error.constructor) {
           case RecordNotFountError:
             return HttpResponseNotFound(error)

@@ -1,5 +1,4 @@
 import { Email } from '@core/domain/valuedObjects/email'
-//import { JWT } from '@core/domain/valuedObjects/jwt'
 import { UserName } from '@modules/accounts/domain/user/userName' 
 import { Password } from '@core/domain/valuedObjects/password'
 import { User } from '@modules/accounts/domain/user/user'
@@ -11,6 +10,8 @@ import { BrazilianShortState, ValidBrazilianShortState } from '@core/domain/valu
 import { BrazilianZipCode } from '@core/domain/valuedObjects/brazilianZipCode'
 import { BrazilianAddress } from '@core/domain/valuedObjects/brazilianAddress'
 import { AccountStatus, ValidAccountStatus } from '@modules/accounts/domain/user/accountStatus'
+import { sign } from 'jsonwebtoken'
+import { JWT_SECRET_KEY } from '@core/config/config'
 
 type UserOverrides = {
   id?: string
@@ -22,6 +23,7 @@ type UserOverrides = {
   neighborhood?: string
   reference?: string
   city?: string
+  pass?: string
 }
 
 const passHasher = new BcryptPasswordHasher()
@@ -65,29 +67,12 @@ export function createUserFactory(overrides?: UserOverrides) {
   return user
 }
 
-export function createAndAuthenticateUser(overrides?: UserOverrides) {
-  /*const name = UserName.create('John Doe').value as UserName
-  const nickName = UserName.create('John').value as UserName
-  const email = Email.create(overrides?.email ?? 'john@doe.com').value as Email
-  const password = Password.create(passHasher, overrides?.password ?? '123456').value as Password
-  const isDisabled = overrides?.idDisabled ?? false;
-  const isAdmin = overrides?.isAdmin ?? false;
-  const avatar = UserAvatar.create('default').value as UserAvatar
-
-  const user = User.create({
-    name,
-    nickName,
-    email,
-    password,
-    isDisabled,
-    isAdmin,
-    avatar
-  }).value as User
-
-  //const jwt = JWT.signUser(user)
-
+export async function createAndAuthenticateUser(overrides?: UserOverrides) {
+  const user = createUserFactory(overrides)
+  const accessToken = await sign({ sub: user.id }, JWT_SECRET_KEY, { expiresIn: '2h' }) as string;
+ 
   return {
     user,
-    //jwt,
-  }*/
+    accessToken,
+  }
 }

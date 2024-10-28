@@ -4,6 +4,22 @@ import { DBContext } from '@infra/database/sequelize/connection'
 import { UserMapper } from '@modules/accounts/persistence/mappers/UserMapper'
 
 export class SequelizeUsersRepository implements IUsersRepository {
+    async findAll(): Promise<User[]> {
+        const users: any = await DBContext.Users.findAll(
+            { 
+                where: {
+                    deletedAt: null
+                },
+                raw: true 
+            })
+        
+        if (users) {
+            return users.map(user => UserMapper.toDomain(user).value as User)
+        } 
+
+        return []
+    }
+
     async findById(id: string): Promise<User> {
         const user: any = await DBContext.Users.findOne({
             where: {
@@ -51,7 +67,7 @@ export class SequelizeUsersRepository implements IUsersRepository {
 
     async save(user: User): Promise<void> {
         const data = await UserMapper.toPersistence(user)
-
+        console.log(data)
         await DBContext.Users.update(data, {
             where: {
                 id: data.id

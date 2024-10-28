@@ -34,7 +34,7 @@ export class GetUserController implements Controller {
             return HttpResponseClientError(error)
         }
       } else {
-        return HttpResponseOk()
+        return HttpResponseOk(result.value)
       }
     } catch (err) {
       return HttpResponseFail(err)

@@ -29,4 +29,5 @@ COPY --from=build --chown=node:node /app/scripts /home/node/app/scripts/
 RUN chmod +x /home/node/app/scripts/server.sh
 
 
-ENTRYPOINT ["/home/node/app/scripts/server.sh"]
+# ENTRYPOINT ["/home/node/app/scripts/server.sh"]
+CMD ["node","/home/node/app/dist/infra/http/server.js"]

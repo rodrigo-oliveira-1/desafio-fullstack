@@ -1,22 +1,26 @@
 import request from 'supertest'
 import { app } from '@infra/http/app'
 import { DBContext, DBConnection } from '@infra/database/sequelize/connection'
+import { createAndAuthenticateUser } from '@test/factories/UserFactory'
 
-//import { createAndAuthenticateUser } from '@test/factories/UserFactory'
-//const { jwt: { token }, } = createAndAuthenticateUser()
+let token = null;
 
-const userEmail = 'johndoe@doe.com'
+const userEmail = 'johndoes@doe.com'
+const userId = 'test-1234567891';
 describe('Update user (e2e)', () => {
   
   beforeAll(async () => {
     try {
+      const { accessToken } = await createAndAuthenticateUser()
+      token = accessToken;
       await DBContext.Users.create({
-        id: 'test-123456789',
+        id: userId,
         name: 'John Doe',
         email: userEmail,
-        cpf: '357.785.940-70',
+        cpf: '299.180.610-90',
         password: '123456',
         bornDate: new Date(),
+        status: 'ACTIVE',
         street: 'Street one',
         number: '1250',
         neighborhood: 'center',
@@ -35,7 +39,7 @@ describe('Update user (e2e)', () => {
   afterAll(async () => {
     try {
       
-      await DBContext.Users.destroy({ where: { email: userEmail }})
+      await DBContext.Users.destroy({ where: { id: userId }})
       await DBConnection.close()
     } catch (error) {
       console.log(error)
@@ -44,14 +48,15 @@ describe('Update user (e2e)', () => {
   
   it('should be able to update an user', async () => {
     const response = await request(app)
-      .put('/users/test-123456789')
-      .set('x-access-token', 'todo_set_auth_token')
+      .put(`/users/${userId}`)
+      .set('x-access-token', token)
       .send({
-        id: 'test-123456789',
+        id: userId,
         name: 'Joana Doe',
         email: 'joanadoe@test.com',
         cpf: '999.353.630-07',
         password: '123456',
+        status: 'ACTIVE',
         bornDate: new Date(),
         street: 'Street one',
         number: '1250',
@@ -62,27 +67,27 @@ describe('Update user (e2e)', () => {
         zipCode: 12256000
       })
 
-    console.log(response.error)
     expect(response.status).toBe(200)
 
     const userInDatabase: any = await DBContext.Users.findOne({
-      where: { email: userEmail },
+      where: { id: userId },
     })
 
     expect(userInDatabase).toBeDefined()
-    expect(userInDatabase.cpf).toEqual('357.785.940-70')//should dont update cpf
+    expect(userInDatabase.cpf).toEqual('29918061090')//should dont update cpf
     expect(userInDatabase.name).toEqual('Joana Doe')
   })
 
   it('should return an error if validation fails', async () => {
     const response = await request(app)
-      .put('/users/test-123456789')
-      .set('x-access-token', 'todo_set_auth_token')
+      .put(`/users/${userId}`)
+      .set('x-access-token', token)
       .send({
-        id: 'test-123456789',
+        id: userId,
         name: 'Joana Doe',
         email: 'joanadoe@test.com',
-        cpf: '999.353.630-77',//invalid cpf
+        cpf: '999.353.630-77',
+        status: 'ACTIVE',
         password: '123456',
         bornDate: new Date(),
         street: 'Street one',
@@ -90,7 +95,7 @@ describe('Update user (e2e)', () => {
         neighborhood: 'center',
         reference: 'center',
         city: 'Sao Paulo',
-        state: 'SP',
+        state: 'XX', //invalid value for updatable field 
         zipCode: 12256000
       })
 

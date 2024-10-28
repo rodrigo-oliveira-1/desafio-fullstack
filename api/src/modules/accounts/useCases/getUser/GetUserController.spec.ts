@@ -1,19 +1,23 @@
 import request from 'supertest'
 import { app } from '@infra/http/app'
 import { DBContext, DBConnection } from '@infra/database/sequelize/connection'
+import { createAndAuthenticateUser } from '@test/factories/UserFactory'
 
-//import { createAndAuthenticateUser } from '@test/factories/UserFactory'
-//const { jwt: { token }, } = createAndAuthenticateUser()
+let token = null;
 
-const userEmail = 'johndoe@doe.com'
+const userEmail = 'johndoe@doe2.com'
 describe('Get user (e2e)', () => {
   
   beforeAll(async () => {
     try {
+      const { accessToken } = await createAndAuthenticateUser()
+      token = accessToken;
+
       await DBContext.Users.create({
-        id: 'test-123456789',
+        id: 'test-1234567890',
         name: 'John Doe',
         email: userEmail,
+        status: 'ACTIVE',
         cpf: '357.785.940-70',
         password: '123456',
         bornDate: new Date(),
@@ -44,21 +48,20 @@ describe('Get user (e2e)', () => {
   
   it('should be able to get an existing user', async () => {
     const response = await request(app)
-      .get('/users/test-123456789')
-      .set('x-access-token', 'todo_set_auth_token')
+      .get('/users/test-1234567890')
+      .set('x-access-token', token)
       .send()
 
-    console.log(response.error)
     expect(response.status).toBe(200)
 
-    expect(response.data).toBeDefined()
-    expect(response.data.email).toEqual(userEmail)
+    expect(response.body).toBeDefined()
+    expect(response.body.email).toEqual(userEmail)
   })
 
   it('should return an 404 error if send an inexisting id', async () => {
     const response = await request(app)
       .get('/users/132')
-      .set('x-access-token', 'todo_set_auth_token')
+      .set('x-access-token', token)
       .send()
 
     expect(response.status).toBe(404)

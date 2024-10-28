@@ -1,18 +1,19 @@
 import { InMemoryUsersRepository } from '../../persistence/repositories/in-memory/InMemoryUsersRepository'
 import { IUsersRepository } from '../../persistence/repositories/IUsersRepository'
-import { GetUser } from './GetUser'
+import { RemoveUser } from './RemoveUser'
+import { IPasswordHasher } from '@infra/providers/IPasswordHasherProvider'
 import { BcryptPasswordHasher } from '@infra/providers/implementations/BcryptPassordHasherProvider'
 import { IDateProvider } from '@infra/providers/IDateProvider'
 import { DayJsProvider } from '@infra/providers/implementations/DayJsProvider'
 import { createUserFactory } from '@test/factories/UserFactory'
 import { User } from '@modules/accounts/domain/user/user'
-import { RecordNotFountError } from '@core/domain/errors/RecordNotFoundError'
 
 
 let usersRepository: IUsersRepository
-let useCase: GetUser
+let useCase: RemoveUser
 let dateProvider: IDateProvider
 let userRegistred: User
+let passHasher: IPasswordHasher
 
 const id = '123456789'
 const name = 'John Doe'
@@ -23,12 +24,15 @@ const neighborhood = 'center'
 const reference = 'no reference'
 const city = 'Sao Paulo'
 
-describe('Get User use case', () => {
+describe('Remove User use case', () => {
   beforeEach(() => {
     usersRepository = new InMemoryUsersRepository()
+    passHasher = new BcryptPasswordHasher()
     dateProvider = new DayJsProvider()
     
-    useCase = new GetUser(usersRepository)
+    useCase = new RemoveUser(
+      usersRepository, 
+      dateProvider)
 
     userRegistred = createUserFactory({
       id, 
@@ -45,19 +49,18 @@ describe('Get User use case', () => {
     usersRepository.create(userRegistred)  
   })
 
-  it('should be able to get an user', async () => {
+  it('should be able to remove an user', async () => {
     
-    const userOrError = await useCase.execute(id)
-    
-    expect(userOrError.isRight()).toBeTruthy()
-    expect(usersRepository.exists('email', email)).toBeTruthy()
-    expect(usersRepository.exists('cpf', cpf)).toBeTruthy()
-  })
+    await useCase.execute({
+      id,
+      userId: 'test-123456789'
+    })
 
-  it('should not be able to get user with an inexistent id', async () => {
-    const userOrError = await useCase.execute('123')
+    const user = await usersRepository.findById(id)
 
-    expect(userOrError.isLeft()).toBeTruthy()
-    expect(userOrError.value).toEqual(new RecordNotFountError('123'))
-  })
+
+    expect(user).toBeTruthy()
+    expect(user.deletedAt).toBeDefined()
+    expect(user.deletedBy).toEqual('test-123456789')
+  })  
 })

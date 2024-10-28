@@ -3,6 +3,9 @@ import { IUsersRepository } from '../IUsersRepository'
 
 export class InMemoryUsersRepository implements IUsersRepository {
   constructor(public items: User[] = []) {}
+  async findAll(): Promise<User[]> {
+    return this.items
+  }
   
   async findById(id: string): Promise<User> {
     return this.items.find(user => user.id === id)

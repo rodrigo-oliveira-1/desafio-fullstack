@@ -2,9 +2,12 @@ import cors from 'cors'
 import { config } from 'dotenv';
 import express from 'express'
 
-console.log(':: HTTP SERVER ::')
-
-config({ path: `.env.${process.env.NODE_ENV}` })
+if (process.env.NODE_ENV === 'production') {
+  config({ path: `/home/node/app/.env.${process.env.NODE_ENV}` })  
+  //console.log(process.env)
+} else {
+  config({ path: `.env.${process.env.NODE_ENV}` })
+}
 
 import { router } from './routes' // eslint-disable-line
 

@@ -1,6 +1,6 @@
 import { decode } from 'jsonwebtoken'
 
-import { fail, forbidden, HttpResponse, ok } from '@core/infra/HttpResponse'
+import { HttpResponseUnauthorized, HttpResponse, HttpResponseOk } from '@core/infra/HttpResponse'
 import { Middleware } from '@core/infra/Middleware'
 
 import { AccessDeniedError } from '../errors/AccessDeniedError'
@@ -26,13 +26,13 @@ export class EnsureAuthenticatedMiddleware implements Middleware {
         try {
           const decoded = decode(accessToken) as DecodedJwt
 
-          return ok({ userId: decoded.sub })
+          return HttpResponseOk({ userId: decoded.sub })
         } catch (err) {
-          return forbidden(new AccessDeniedError())
+          return HttpResponseUnauthorized(new AccessDeniedError())
         }
       }
 
-      return forbidden(new AccessDeniedError())
+      return HttpResponseUnauthorized(new AccessDeniedError())
     } catch (error) {
       return fail(error)
     }

@@ -1,0 +1,50 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysqldb
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: users
+      MYSQL_USER: sirio
+      MYSQL_PASSWORD: 123456
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - app-network
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: api
+    depends_on:
+      - mysql
+    networks:
+      app-network:
+        aliases:
+          - api
+    ports:
+      - "3030:3030"
+ 
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: app
+    depends_on:
+      - mysql
+      - api
+    networks:
+      app-network:
+        aliases:
+          - app
+    ports:
+      - "4000:80"     
+
+networks:
+  app-network:
+
+volumes:
+  mysql-data:

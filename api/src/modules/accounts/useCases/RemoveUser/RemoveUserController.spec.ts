@@ -1,22 +1,26 @@
 import request from 'supertest'
 import { app } from '@infra/http/app'
 import { DBContext, DBConnection } from '@infra/database/sequelize/connection'
+import { createAndAuthenticateUser } from '@test/factories/UserFactory'
 
-//import { createAndAuthenticateUser } from '@test/factories/UserFactory'
-//const { jwt: { token }, } = createAndAuthenticateUser()
+let token = null;
 
-const userEmail = 'johndoe@doe.com'
-describe('Get user (e2e)', () => {
+const userEmail = 'johndoe@remove.com'
+const userId = 'test-11111111';
+describe('Remove user (e2e)', () => {
   
   beforeAll(async () => {
     try {
+      const { accessToken } = await createAndAuthenticateUser()
+      token = accessToken;
       await DBContext.Users.create({
-        id: 'test-123456789',
+        id: userId,
         name: 'John Doe',
         email: userEmail,
-        cpf: '357.785.940-70',
+        cpf: '299.180.610-90',
         password: '123456',
         bornDate: new Date(),
+        status: 'ACTIVE',
         street: 'Street one',
         number: '1250',
         neighborhood: 'center',
@@ -35,32 +39,27 @@ describe('Get user (e2e)', () => {
   afterAll(async () => {
     try {
       
-      await DBContext.Users.destroy({ where: { email: userEmail }})
+      await DBContext.Users.destroy({ where: { id: userId }})
       await DBConnection.close()
     } catch (error) {
       console.log(error)
     }
   })
   
-  it('should be able to get an existing user', async () => {
+  it('should be able to remove an user', async () => {
     const response = await request(app)
-      .get('/users/test-123456789')
-      .set('x-access-token', 'todo_set_auth_token')
-      .send()
+      .delete(`/users/${userId}`)
+      .set('x-access-token', token)
+      .send({ id: userId })
 
-    console.log(response.error)
     expect(response.status).toBe(200)
 
-    expect(response.data).toBeDefined()
-    expect(response.data.email).toEqual(userEmail)
-  })
+    const userInDatabase: any = await DBContext.Users.findOne({
+      where: { id: userId },
+    })
 
-  it('should return an 404 error if send an inexisting id', async () => {
-    const response = await request(app)
-      .get('/users/132')
-      .set('x-access-token', 'todo_set_auth_token')
-      .send()
-
-    expect(response.status).toBe(404)
-  })
+    expect(userInDatabase).toBeDefined()
+    expect(userInDatabase.deletedAt).toBeDefined()
+    expect(userInDatabase.deletedBy).toBeDefined()
+  })  
 })

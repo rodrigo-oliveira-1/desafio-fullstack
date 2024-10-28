@@ -1,13 +1,18 @@
 import request from 'supertest'
 import { app } from '@infra/http/app'
 import { DBContext, DBConnection } from '@infra/database/sequelize/connection'
+import { createAndAuthenticateUser } from '@test/factories/UserFactory'
 
-//import { createAndAuthenticateUser } from '@test/factories/UserFactory'
-//const { jwt: { token }, } = createAndAuthenticateUser()
-
+let token = null;
 const userEmail = 'johndoe@doe.com'
+
 describe('Create user (e2e)', () => {
   
+  beforeAll(async () => {
+    const { accessToken } = await createAndAuthenticateUser()
+    token = accessToken;
+  })
+
   afterAll(async () => {
     try {
       
@@ -21,7 +26,7 @@ describe('Create user (e2e)', () => {
   it('should be able to register new account', async () => {
     const response = await request(app)
       .post('/users')
-      .set('x-access-token', 'todo_set_auth_token')
+      .set('x-access-token', token)
       .send({
         name: 'John Doe',
         email: userEmail,
@@ -50,8 +55,8 @@ describe('Create user (e2e)', () => {
 
   it('should return an error if validation fails', async () => {
     const response = await request(app)
-      .post('/accounts')
-      .set('x-access-token', 'todo_set_auth_token')
+      .post('/users')
+      .set('x-access-token', token)
       .send({
         name: 'John Doe',
         email: userEmail,

@@ -9,6 +9,7 @@
     "test": "jest",
     "db:migrations": "npx sequelize-cli db:migrate",
     "db:seed": "npx sequelize-cli db:seed:all",
+    "db:prepare": "npm run db:migrations && npm run db:seed",
     "build": "babel src --extensions \".ts\" --out-dir dist --copy-files"
   },
   "author": "",
@@ -43,6 +44,7 @@
     "dayjs": "^1.11.10",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.11.3",
     "nodemailer": "^6.9.12",
     "pg": "^8.11.5",

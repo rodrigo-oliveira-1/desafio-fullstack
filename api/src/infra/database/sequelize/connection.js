@@ -21,7 +21,7 @@ const configConnection = {
 let DBConnection;
 try {
     const {DB_DBNAME,DB_USERNAME,DB_PASSWORD,DB_HOSTNAME,DB_PORT} = process.env
-    console.log(`pg://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOSTNAME}:${DB_PORT}/${DB_DBNAME}`)
+    
     DBConnection = new Sequelize(DB_DBNAME,DB_USERNAME,DB_PASSWORD, configConnection);
 } catch (error) {
     console.log(error)

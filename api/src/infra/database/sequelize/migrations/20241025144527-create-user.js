@@ -10,26 +10,23 @@ module.exports = {
       },
       createdAt: {
         type: Sequelize.DATE,
-        field: 'created_at',
-        defaultValue: Sequelize.literal('CURRENT_DATE')
+        field: 'created_at'
       },
       createdBy: {
         type: Sequelize.UUID,
-        field: 'created_by' 
+        field: 'created_by'
       },
       updatedAt: {
         type: Sequelize.DATE,
-        field: 'updated_at',
-        defaultValue: Sequelize.literal('CURRENT_DATE')
+        field: 'updated_at'
       },
       updatedBy: {
         type: Sequelize.UUID,
-        field: 'updated_by' 
+        field: 'updated_by'
       },
       deletedAt: {
         type: Sequelize.DATE,
-        field: 'deleted_at',
-        defaultValue: Sequelize.literal('CURRENT_DATE')
+        field: 'deleted_at'
       },
       deletedBy: {
         type: Sequelize.UUID,

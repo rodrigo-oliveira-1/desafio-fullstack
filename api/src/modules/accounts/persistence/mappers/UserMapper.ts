@@ -85,7 +85,7 @@ export class UserMapper {
       updatedBy: data.updatedBy,
       deletedAt: data.deletedAt,
       deletedBy: data.deletedBy
-    })
+    }, data.id)
 
     return right(user) 
   }
