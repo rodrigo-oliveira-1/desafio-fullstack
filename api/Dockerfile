@@ -19,6 +19,8 @@ ENV NODE_ENV=production
 RUN npm run build
 
 FROM node:18-alpine AS runtime
+# Instala o bash no Alpine
+RUN apk add --no-cache bash
 USER node
 COPY .env.development /home/node/app/.env.production
 COPY .sequelizerc.prod /home/node/app/.sequelizerc
@@ -27,7 +29,6 @@ COPY --chown=node:node --from=dependencies /app/node_modules /home/node/app/node
 COPY --from=build --chown=node:node /app/dist /home/node/app/dist/
 COPY --from=build --chown=node:node /app/scripts /home/node/app/scripts/
 RUN chmod +x /home/node/app/scripts/server.sh
+RUN chmod +x /home/node/app/scripts/wait-for-it.sh
 
-
-# ENTRYPOINT ["/home/node/app/scripts/server.sh"]
-CMD ["node","/home/node/app/dist/infra/http/server.js"]
+ENTRYPOINT ["/home/node/app/scripts/wait-for-it.sh", "mysqldb:3306", "--timeout=30", "--strict", "--", "/home/node/app/scripts/server.sh"]

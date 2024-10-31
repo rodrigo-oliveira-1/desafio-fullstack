@@ -16,6 +16,7 @@ const app = express()
 app.use(
   cors({
     exposedHeaders: ['x-total-count', 'Content-Type', 'Content-Length'],
+    origin: '*'
   })
 )
 

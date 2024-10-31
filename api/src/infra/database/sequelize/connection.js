@@ -1,6 +1,7 @@
 const dotenv = require("dotenv");
-dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
 
+console.log(process.env)
 const cls = require('cls-hooked');
 const namespace = cls.createNamespace('sequelize_default');
 
@@ -25,6 +26,7 @@ try {
     DBConnection = new Sequelize(DB_DBNAME,DB_USERNAME,DB_PASSWORD, configConnection);
 } catch (error) {
     console.log(error)
+    console.log(process.env)
 }
 
 const DBContext = {}

@@ -1,5 +1,10 @@
 const dotenv = require("dotenv");
-dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
+//if (process.env.NODE_ENV === 'production') {
+  //dotenv.config({ path: `/home/node/app/.env.${process.env.NODE_ENV}` })  
+  //console.log(process.env)
+//} else {
+  dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
+//}
 
 const {DB_DBNAME,DB_USERNAME,DB_PASSWORD,DB_HOSTNAME,DB_PORT} = process.env
     

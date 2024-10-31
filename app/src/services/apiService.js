@@ -5,7 +5,7 @@ class ApiService {
   constructor() {
     this.axios = axios.create(
       {
-        baseURL: 'http://api:3030'
+        baseURL: 'http://localhost:3030'
       }
     );
 
