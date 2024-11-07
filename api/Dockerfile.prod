@@ -15,7 +15,7 @@ ENV DB_PORT=3306
 ENV JWT_SECRET_KEY=my_secret
 ENV PORT=3030
 
-# Copia as dependências e os artefatos de build do CI - 
+# Copia as dependências e os artefatos de build do CI 
 COPY --chown=node:node .sequelizerc.prod /home/node/app/.sequelizerc
 COPY --chown=node:node node_modules ./node_modules
 COPY --chown=node:node dist ./dist
