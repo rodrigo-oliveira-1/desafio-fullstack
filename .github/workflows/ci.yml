@@ -48,8 +48,8 @@ jobs:
           cp -r node_modules dist scripts .sequelizerc.prod build_output/
 
       - name: Archive build artifacts
-        working-directory: ./api
         uses: actions/upload-artifact@v3
+        working-directory: ./api
         with:
           name: build_output
           path: build_output
