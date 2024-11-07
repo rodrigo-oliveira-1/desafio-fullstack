@@ -14,7 +14,7 @@ FROM node:18-alpine AS build
 WORKDIR /app
 COPY --from=devDependencies /app/ .
 COPY . .
-COPY .env.development .env.production
+COPY .env.test .env.production
 ENV NODE_ENV=production
 RUN npm run build
 
@@ -22,7 +22,7 @@ FROM node:18-alpine AS runtime
 # Instala o bash no Alpine
 RUN apk add --no-cache bash
 USER node
-COPY .env.development /home/node/app/.env.production
+COPY .env.test /home/node/app/.env.production
 COPY .sequelizerc.prod /home/node/app/.sequelizerc
 ENV NODE_ENV=production
 COPY --chown=node:node --from=dependencies /app/node_modules /home/node/app/node_modules/

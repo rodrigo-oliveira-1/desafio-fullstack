@@ -251,6 +251,8 @@ const UserForm = ({ record }) => {
                   error={Boolean(touched.bornDate && errors.bornDate)}
                   fullWidth
                   helperText={touched.bornDate && errors.bornDate}
+                  type="date"
+                  format="dd/mm/yyyy"
                   label="Data nascimento"
                   margin="normal"
                   name="bornDate"
@@ -258,6 +260,9 @@ const UserForm = ({ record }) => {
                   onChange={handleChange}
                   value={values.bornDate}
                   variant="outlined"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
                 />
               </Box>
               <Box display="flex">

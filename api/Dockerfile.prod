@@ -1,0 +1,29 @@
+# Etapa de execução final
+FROM node:18-alpine AS runtime
+WORKDIR /app
+
+# Configura o ambiente de produção e permissões
+USER node
+# O Ideal é passar via secrets
+ENV NODE_ENV=production
+ENV NODE_ENV=production
+ENV DB_DBNAME=users
+ENV DB_USERNAME=sirio
+ENV DB_PASSWORD=123456
+ENV DB_HOSTNAME=mysqldb
+ENV DB_PORT=3306
+ENV JWT_SECRET_KEY=my_secret
+ENV PORT=3030
+
+# Copia as dependências e os artefatos de build do CI
+COPY --chown=node:node .sequelizerc.prod /home/node/app/.sequelizerc
+COPY --chown=node:node node_modules ./node_modules
+COPY --chown=node:node dist ./dist
+COPY --chown=node:node scripts ./scripts
+
+# Torna os scripts executáveis (pode já estar configurado no build, mas incluído para garantir)
+RUN chmod +x ./scripts/server.sh ./scripts/wait-for-it.sh
+
+# Define o entrypoint para iniciar a aplicação
+ENTRYPOINT ["./scripts/wait-for-it.sh", "mysqldb:3306", "--timeout=30", "--strict", "--", "./scripts/server.sh"]
+
