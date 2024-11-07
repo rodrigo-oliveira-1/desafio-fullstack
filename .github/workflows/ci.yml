@@ -3,7 +3,7 @@ name: CI Pipeline
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - 'api/**' #Triggers only if there are changes in the /api folder   
 
