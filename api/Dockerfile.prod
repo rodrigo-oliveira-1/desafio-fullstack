@@ -24,6 +24,6 @@ COPY --chown=node:node scripts ./scripts
 # Torna os scripts executáveis (pode já estar configurado no build, mas incluído para garantir)
 RUN chmod +x ./scripts/server.sh ./scripts/wait-for-it.sh
 
-# Define o entrypoint para iniciar a aplicação
+# Define o entrypoint para iniciar a aplicacao
 ENTRYPOINT ["./scripts/wait-for-it.sh", "mysqldb:3306", "--timeout=30", "--strict", "--", "./scripts/server.sh"]
 
