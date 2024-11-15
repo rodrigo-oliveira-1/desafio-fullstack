@@ -56,6 +56,7 @@ jobs:
   docker:
     needs: build
     runs-on: ubuntu-latest
+    when: manual
 
     steps:
       - name: Checkout code
@@ -82,3 +83,37 @@ jobs:
 
       - name: Push Docker image to Docker Hub
         run: docker push ${{ secrets.DOCKER_USERNAME }}/learn-api-container:latest
+
+  aws-ecr:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build_output
+          path: ./api
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME  }}
+          aws-region: us-east-2
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        working-directory: ./api
+        run: docker build -f Dockerfile.prod -t df/fargate-df .  
+
+      - name: Tag Docker image for ECR
+        run: docker tag df/fargate-df:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-2.amazonaws.com/df/fargate-df:latest
+
+      - name: Push Docker image to Amazon ECR
+        run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-2.amazonaws.com/df/fargate-df:latest
