@@ -1,4 +1,4 @@
-name: Build and publish to ecr
+name: Publish app
 
 on:
   push:
@@ -51,6 +51,57 @@ jobs:
           mkdir -p build_output
           cp -r node_modules dist scripts .sequelizerc.prod build_output/
 
+      - name: Archive build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build_output
+          path: ./api/build_output
+
+  docker:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build_output
+          path: ./api
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build Docker image
+        working-directory: ./api
+        run: docker build -f Dockerfile.prod -t learn-api-container:latest .
+
+      - name: Tag Docker image
+        run: docker tag learn-api-container:latest ${{ secrets.DOCKER_USERNAME }}/learn-api-container:latest
+
+      - name: Push Docker image to Docker Hub
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/learn-api-container:latest
+
+  aws-ecr:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build_output
+          path: ./api
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -70,5 +121,3 @@ jobs:
 
       - name: Push Docker image to Amazon ECR
         run: docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-2.amazonaws.com/df/fargate-df:latest
-
-      
