@@ -11,7 +11,7 @@ ENV DB_USERNAME=sirio
 ENV DB_PASSWORD=123456
 ENV DB_HOSTNAME=localhost
 ENV DB_PORT=3306
-ENV JWT_SECRET_KEY=my_secret
+ENV JWT_SECRET_KEY=my_secret_to_define
 ENV PORT=3030
 
 # Copia as dependências e os artefatos de build do CI 
