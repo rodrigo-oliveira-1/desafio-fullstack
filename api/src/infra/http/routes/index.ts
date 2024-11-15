@@ -8,4 +8,8 @@ const router = Router()
 router.use('/users', usersRouter)
 router.use('/signin', authRouter)
 
+router.use('/healthcheck', (req, res) => {
+    res.status(204).json({message: 'server is running with version v1'})
+})
+
 export { router }

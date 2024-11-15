@@ -19,7 +19,7 @@ services:
   api:
     build:
       context: ./api
-      dockerfile: Dockerfile.new
+      dockerfile: Dockerfile.dev
     container_name: api
     depends_on:
       - mysql

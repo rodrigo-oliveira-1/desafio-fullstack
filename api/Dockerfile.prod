@@ -6,11 +6,10 @@ WORKDIR /app
 USER node
 # O Ideal é passar via secrets
 ENV NODE_ENV=production
-ENV NODE_ENV=production
 ENV DB_DBNAME=users
 ENV DB_USERNAME=sirio
 ENV DB_PASSWORD=123456
-ENV DB_HOSTNAME=mysqldb
+ENV DB_HOSTNAME=localhost
 ENV DB_PORT=3306
 ENV JWT_SECRET_KEY=my_secret
 ENV PORT=3030
@@ -25,5 +24,5 @@ COPY --chown=node:node scripts ./scripts
 RUN chmod +x ./scripts/server.sh ./scripts/wait-for-it.sh
 
 # Define o entrypoint para iniciar a aplicacao
-ENTRYPOINT ["./scripts/wait-for-it.sh", "mysqldb:3306", "--timeout=30", "--strict", "--", "./scripts/server.sh"]
-
+# ENTRYPOINT ["./scripts/wait-for-it.sh", "mysqldb:3306", "--timeout=30", "--strict", "--", "./scripts/server.sh"]
+ENTRYPOINT ["./scripts/server.sh"]
