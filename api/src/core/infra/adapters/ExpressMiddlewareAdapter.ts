@@ -23,6 +23,7 @@ export const adaptMiddleware = (middleware: Middleware) => {
 
       return next()
     } else {
+      console.log('V1: Error on read route: ' + new Date().toISOString())
       return response.status(httpResponse.statusCode).json({
         error: httpResponse.body.error,
       })
